@@ -1,4 +1,3 @@
-package com.example.mdbspringboot.rabbitmq;/*
 package com.example.mdbspringboot.rabbitmq;
 
 import java.util.concurrent.TimeUnit;
@@ -26,5 +25,3 @@ public class Runner implements CommandLineRunner {
     }
 
 }
-
- */
