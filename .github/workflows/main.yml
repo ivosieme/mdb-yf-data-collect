@@ -27,3 +27,36 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_ACCESS_STRING: ${{ secrets.DB_ACCESS_STRING }}
         run: ./mvnw test
+
+      - name: Build Docker image
+        if: github.ref == 'refs/heads/main'
+        run: docker build . -t ghcr.io/${{ github.repository_owner }}/yf-data-collect:latest
+
+      - name: Log in to GitHub Container Registry
+        if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GIT_ACCESS_TOKEN }}
+
+      - name: Push Docker image to GitHub Container Registry
+        if: github.ref == 'refs/heads/main'
+        run: docker push ghcr.io/${{ github.repository_owner }}/yf-data-collect:latest
+
+      - name: Set up Kubeconfig
+        if: github.ref == 'refs/heads/main'
+        env:
+          KUBECONFIG_CONTENTS: ${{ secrets.KUBECONFIG }}
+        run: |
+          echo "$KUBECONFIG_CONTENTS" > ./kubeconfig
+          echo "KUBECONFIG_FILE=./kubeconfig" >> $GITHUB_ENV
+
+      - name: Apply Kubernetes Deployment, Service, and HPA
+        if: github.ref == 'refs/heads/main'
+        run: |
+          kubectl --kubeconfig $KUBECONFIG_FILE apply -f yf-data-collect-deployment.yaml -n mdb || true
+          kubectl --kubeconfig $KUBECONFIG_FILE apply -f yf-data-collect-loadbalancer.yaml -n mdb || true
+          kubectl --kubeconfig $KUBECONFIG_FILE apply -f yf-data-collect-hpa.yaml -n mdb || true
+        env:
+          KUBECONFIG_FILE: ${{ env.KUBECONFIG_FILE }}

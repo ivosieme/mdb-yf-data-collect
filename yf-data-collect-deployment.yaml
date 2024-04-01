@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yf-data-collect
+  namespace: mdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yf-data-collect
+  template:
+    metadata:
+      labels:
+        app: yf-data-collect
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/ivosieme/yf-data-collect:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8455
+          env:
+            - name: APP_ENV
+              value: 'prod'
+            - name: DB_ACCESS_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: db-access-string
+                  key: db-access-string
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-name
+                  key: db-name
+      imagePullSecrets:
+        - name: ghcr-creds

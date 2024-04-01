@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: yf-data-collect
+  namespace: mdb
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 161.97.165.65  # Presuming environment supports specifying this
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8455  # The external service port
+      targetPort: 8455  # The pod's port where the service sends traffic
+  selector:
+    app: yf-data-collect

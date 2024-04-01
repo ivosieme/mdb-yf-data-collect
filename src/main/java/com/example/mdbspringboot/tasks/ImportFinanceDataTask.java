@@ -48,7 +48,7 @@ public class ImportFinanceDataTask {
         log.info("The time is now {}", dateFormat.format(new Date()));
     }
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 3600000)
     public void fetchDataFromApi() {
         Date date = new Date();
         try {
