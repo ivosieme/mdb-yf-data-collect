@@ -22,10 +22,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 //@EnableMongoRepositories
 public class MdbSpringBootApplication{
 	@Value("${app.rabbit.topicExchangeName}")
-	private static String topicExchangeName;
+	private String topicExchangeName;
 
 	@Value("${app.rabbit.queue.name}")
-	private static String queueName;
+	private String queueName;
 
 	@Bean
 	Queue queue() {
