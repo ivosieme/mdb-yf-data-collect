@@ -19,7 +19,7 @@ spec:
         app: yf-data-collect
     spec:
       containers:
-        - name: api
+        - name: yf-data-collect
           image: ghcr.io/ivosieme/yf-data-collect:latest
           imagePullPolicy: Always
           ports:
