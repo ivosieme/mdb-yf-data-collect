@@ -27,15 +27,10 @@ spec:
           env:
             - name: APP_ENV
               value: 'prod'
-            - name: DB_ACCESS_STRING
+            - name: YAHOO_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: db-access-string
-                  key: db-access-string
-            - name: DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: db-name
-                  key: db-name
+                  name: yahoo-api-key
+                  key: yahoo-api-key
       imagePullSecrets:
         - name: ghcr-creds
