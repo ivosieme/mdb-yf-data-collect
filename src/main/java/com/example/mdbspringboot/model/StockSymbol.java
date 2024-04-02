@@ -20,6 +20,12 @@ public class StockSymbol {
     @LastModifiedDate
     private String lastModifiedDate;
 
+    // Default no-argument constructor
+    public StockSymbol() {
+        super();
+    }
+
+    // All-arguments constructor
     public StockSymbol(String id, String symbol, String name, float lastSale) {
         super();
         this.id = id;
