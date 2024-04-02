@@ -16,7 +16,7 @@ spec:
       containers:
         - name: api
           image: ghcr.io/ivosieme/yf-data-collect:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8455
           env:
