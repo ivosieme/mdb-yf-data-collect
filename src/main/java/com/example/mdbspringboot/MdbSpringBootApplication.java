@@ -27,6 +27,9 @@ public class MdbSpringBootApplication{
 	@Value("${app.rabbit.queue.name}")
 	private String queueName;
 
+	@Value("${app.rabbit.routing.key}")
+	private String routingKey;
+
 	@Bean
 	Queue queue() {
 		return new Queue(queueName, false);
@@ -39,7 +42,7 @@ public class MdbSpringBootApplication{
 
 	@Bean
 	Binding binding(Queue queue, TopicExchange exchange) {
-		return BindingBuilder.bind(queue).to(exchange).with("foo.bar.#");
+		return BindingBuilder.bind(queue).to(exchange).with(routingKey);
 	}
 
 	@Bean

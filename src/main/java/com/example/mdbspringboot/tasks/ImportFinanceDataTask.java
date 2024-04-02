@@ -10,7 +10,9 @@ import com.example.mdbspringboot.model.StockSymbol;
 import com.example.mdbspringboot.repository.CustomItemRepositoryImpl;
 import com.example.mdbspringboot.repository.CustomSymbolRepository;
 import com.example.mdbspringboot.repository.StockSymbolRepository;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -33,6 +35,18 @@ public class ImportFinanceDataTask {
     private static final Logger log = LoggerFactory.getLogger(ImportFinanceDataTask.class);
 
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
+    @Value("${app.rabbit.topicExchangeName}")
+    private String topicExchangeName;
+
+    @Value("${app.rabbit.queue.name}")
+    private String queueName;
+
+    @Value("${app.rabbit.routing.key}")
+    private String routingKey;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @Autowired
     CustomSymbolRepository customSymbolRepository;
@@ -98,12 +112,15 @@ public class ImportFinanceDataTask {
                         symbol.setLowSale(lastSales.get(i));
                         System.out.println("Low Sale update on" + symbols.get(i));
                     }
+                    //Save Persist the data to MongoDB
                     stockSymbolRepository.save(symbol);
-                    //customSymbolRepository.updateSymbolLastSale(symbols.get(i) , lastSales.get(i));
+                    //send to RabbitMQ
+                    rabbitTemplate.convertAndSend(topicExchangeName, routingKey, "Data updated for " + symbols.get(i));
                 } else {
                     System.out.println("Insert new row: " + symbols.get(i));
                     //groceryItemRepo.save(new GroceryItem("Whole Wheat Biscuit", "Whole Wheat Biscuit", 5, "snacks"));
                     stockSymbolRepository.save(new StockSymbol(symbols.get(i), symbols.get(i), names.get(i), lastSales.get(i) ));
+                    rabbitTemplate.convertAndSend(topicExchangeName, routingKey, "New symbol inserted " + symbols.get(i));
                 }
             }
             // Print the returned JSON in the console
