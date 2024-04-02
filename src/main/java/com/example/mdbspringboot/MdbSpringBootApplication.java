@@ -8,6 +8,7 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -20,9 +21,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 //@EnableMongoRepositories
 public class MdbSpringBootApplication{
-	static final String topicExchangeName = "spring-boot-exchange";
+	@Value("${app.rabbit.topicExchangeName}")
+	private static String topicExchangeName;
 
-	static final String queueName = "spring-boot";
+	@Value("${app.rabbit.queue.name}")
+	private static String queueName;
 
 	@Bean
 	Queue queue() {
