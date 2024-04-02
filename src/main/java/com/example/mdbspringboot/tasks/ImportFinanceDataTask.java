@@ -28,9 +28,14 @@ import org.springframework.boot.json.JsonParserFactory;
 @Component
 public class ImportFinanceDataTask {
 
-    private static final String API_URL = "https://yahoo-finance15.p.rapidapi.com/api/v2/markets/tickers";
-    private static final String API_KEY = "80d7908f8cmsh5bbcdf3c99adef7p1b3135jsn9effdbc155d8";
-    private static final String API_HOST = "yahoo-finance15.p.rapidapi.com";
+    @Value("${app.yahoo.api.url}")
+    private String API_URL;
+
+    @Value("${app.yahoo.api.key}")
+    private String API_KEY;
+
+    @Value("${app.yahoo.api.host}")
+    private String API_HOST;
 
     private static final Logger log = LoggerFactory.getLogger(ImportFinanceDataTask.class);
 
