@@ -24,8 +24,7 @@ jobs:
 
       - name: Run tests
         env:
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_ACCESS_STRING: ${{ secrets.DB_ACCESS_STRING }}
+          YAHOO_API_KEY: ${{ secrets.YAHOO_API_KEY }}
         run: ./mvnw test
 
       - name: Build Docker image
