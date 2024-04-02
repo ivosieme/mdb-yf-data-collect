@@ -1,13 +1,8 @@
 package com.example.mdbspringboot.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document("StockSymbol")
 public class StockSymbol {
 
-    @Id
     private String id;
 
     private String symbol;
@@ -17,7 +12,6 @@ public class StockSymbol {
     private float lowSale = 0;
     private float volatilityIndex = 0;
 
-    @LastModifiedDate
     private String lastModifiedDate;
 
     // Default no-argument constructor
