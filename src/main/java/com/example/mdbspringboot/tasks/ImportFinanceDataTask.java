@@ -110,8 +110,20 @@ public class ImportFinanceDataTask {
 
                     // If the symbol exists, update it
                     if (existingSymbolResponse.getStatusCode().is2xxSuccessful() && existingSymbolResponse.getBody() != null) {
+                        StockSymbol existingSymbol = existingSymbolResponse.getBody();
                         System.out.println("Updating: " + symbolStr);
-                        System.out.println(symbol);
+
+                        // Compare and set highSale price
+                        if (lastSale > existingSymbol.getHighSale()) {
+                            existingSymbol.setHighSale(lastSale);
+                        }
+
+                        // Compare and set lowSale price
+                        // Ensure that lowSale is not zero (uninitialized) and the lastSale is lower than current lowSale
+                        if (existingSymbol.getLowSale() == 0 || lastSale < existingSymbol.getLowSale()) {
+                            existingSymbol.setLowSale(lastSale);
+                        }
+                        
                         restTemplate.put(MDB_API_URL + "/api/stock/" + symbolStr, symbol);
                         //persist to RabbitMQ
                         rabbitTemplate.convertAndSend(topicExchangeName, routingKey, "UPDATE:" + symbolStr);
