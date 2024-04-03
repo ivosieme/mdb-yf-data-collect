@@ -113,6 +113,10 @@ public class ImportFinanceDataTask {
                         StockSymbol existingSymbol = existingSymbolResponse.getBody();
                         System.out.println("Updating: " + symbolStr);
 
+                        //set the old values
+                        symbol.setHighSale(existingSymbol.getHighSale());
+                        symbol.setLowSale(existingSymbol.getLowSale());
+
                         // Compare and set highSale price
                         if (lastSale > existingSymbol.getHighSale()) {
                             symbol.setHighSale(lastSale);
