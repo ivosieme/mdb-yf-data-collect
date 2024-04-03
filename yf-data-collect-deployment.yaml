@@ -34,10 +34,10 @@ spec:
                   key: yahoo-api-key
           resources:
             requests:
-              cpu: "100m"  # Requesting 100 millicores
-              memory: "256Mi"
-            limits:
-              cpu: "200m"
+              cpu: "150m"  # Requesting millicores
               memory: "512Mi"
+            limits:
+              cpu: "320m"
+              memory: "1024Mi"
       imagePullSecrets:
         - name: ghcr-creds
