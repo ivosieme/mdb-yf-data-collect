@@ -116,14 +116,16 @@ public class ImportFinanceDataTask {
                         // Compare and set highSale price
                         if (lastSale > existingSymbol.getHighSale()) {
                             existingSymbol.setHighSale(lastSale);
+                            System.out.println("- high: " + lastSale);
                         }
 
                         // Compare and set lowSale price
                         // Ensure that lowSale is not zero (uninitialized) and the lastSale is lower than current lowSale
                         if (existingSymbol.getLowSale() == 0 || lastSale < existingSymbol.getLowSale()) {
                             existingSymbol.setLowSale(lastSale);
+                            System.out.println("- low: " + lastSale);
                         }
-                        
+
                         restTemplate.put(MDB_API_URL + "/api/stock/" + symbolStr, symbol);
                         //persist to RabbitMQ
                         rabbitTemplate.convertAndSend(topicExchangeName, routingKey, "UPDATE:" + symbolStr);
