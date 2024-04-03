@@ -111,6 +111,7 @@ public class ImportFinanceDataTask {
                     // If the symbol exists, update it
                     if (existingSymbolResponse.getStatusCode().is2xxSuccessful() && existingSymbolResponse.getBody() != null) {
                         System.out.println("Updating: " + symbolStr);
+                        System.out.println(symbol);
                         restTemplate.put(MDB_API_URL + "/api/stock/" + symbolStr, symbol);
                         //persist to RabbitMQ
                         rabbitTemplate.convertAndSend(topicExchangeName, routingKey, "UPDATE:" + symbolStr);
@@ -119,6 +120,7 @@ public class ImportFinanceDataTask {
                     // Symbol not found, create a new one
                     System.out.println("Creating new: " + symbolStr);
                     restTemplate.postForEntity(MDB_API_URL + "/api/stock", symbol, StockSymbol.class);
+                    System.out.println(symbol);
                     //persist to RabbitMQ
                     rabbitTemplate.convertAndSend(topicExchangeName, routingKey, "CREATE:" + symbolStr);
                 } catch (Exception e) {
