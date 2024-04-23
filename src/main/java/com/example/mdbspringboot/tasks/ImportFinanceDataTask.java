@@ -55,7 +55,7 @@ public class ImportFinanceDataTask {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 30000)
     public void reportCurrentTime() {
         log.info("The time is now {}", dateFormat.format(new Date()));
     }
@@ -145,7 +145,7 @@ public class ImportFinanceDataTask {
      * I implemented this method to generate a bit more traffic for my App
      *
      */
-    @Scheduled(fixedRate = 10000) // Adjust the rate as needed
+    @Scheduled(fixedRate = 1000) // Adjust the rate as needed
     public void adjustRandomStockPrice() {
         RestTemplate restTemplate = new RestTemplate();
         try {
