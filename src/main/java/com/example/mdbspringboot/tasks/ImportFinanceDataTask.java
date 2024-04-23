@@ -1,10 +1,7 @@
 package com.example.mdbspringboot.tasks;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.example.mdbspringboot.model.StockSymbol;
 /*
@@ -58,22 +55,12 @@ public class ImportFinanceDataTask {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
-/*
-    @Autowired
-    CustomSymbolRepository customSymbolRepository;
-
-    @Autowired
-    CustomItemRepositoryImpl customItemRepositoryImpl;
-
-    @Autowired
-    StockSymbolRepository stockSymbolRepository;
-*/
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 30000)
     public void reportCurrentTime() {
         log.info("The time is now {}", dateFormat.format(new Date()));
     }
 
-    @Scheduled(fixedRate = 3600000)
+    @Scheduled(fixedRate = 3000)
     public void fetchDataFromApi() {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -148,6 +135,49 @@ public class ImportFinanceDataTask {
             }
         } catch (Exception e) {
             log.error("Error fetching data from API: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * DEMO ONLY
+     *
+     * because my Yahoo Finance API account is limited to 3000 calls/month,
+     * I implemented this method to generate a bit more traffic for my App
+     *
+     */
+    @Scheduled(fixedRate = 3600000) // Adjust the rate as needed
+    public void adjustRandomStockPrice() {
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            // Fetch all stock symbols from the API
+            ResponseEntity<String> response = restTemplate.getForEntity(MDB_API_URL + "/api/stocks", String.class);
+            JsonParser springParser = JsonParserFactory.getJsonParser();
+            Map<String, Object> map = springParser.parseMap(response.getBody());
+            List<Map<String, Object>> stocks = (List<Map<String, Object>>) map.get("stocks");
+
+            if (stocks != null && !stocks.isEmpty()) {
+                // Pick a random stock
+                Random random = new Random();
+                Map<String, Object> randomStock = stocks.get(random.nextInt(stocks.size()));
+
+                String symbol = (String) randomStock.get("symbol");
+                float lastSale = Float.parseFloat((String) randomStock.get("lastSale"));
+                boolean increase = random.nextBoolean(); // Randomly decide to increase or decrease
+
+                // Calculate the new price with a ±0.5% variation
+                float changeFactor = 1 + (increase ? 0.005f : -0.005f);
+                lastSale *= changeFactor;
+
+                // Update the stock object
+                StockSymbol stock = new StockSymbol(symbol, symbol, (String) randomStock.get("name"), lastSale);
+                restTemplate.put(MDB_API_URL + "/api/stock/" + symbol, stock);
+                System.out.println("Adjusted stock " + symbol + " to new last sale price: " + lastSale);
+
+                // Persist to RabbitMQ
+                rabbitTemplate.convertAndSend(topicExchangeName, routingKey, "UPDATE:" + symbol);
+            }
+        } catch (Exception e) {
+            log.error("Error adjusting stock price: {}", e.getMessage());
         }
     }
 }

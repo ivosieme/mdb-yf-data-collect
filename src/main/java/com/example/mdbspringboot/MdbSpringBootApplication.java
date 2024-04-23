@@ -41,24 +41,6 @@ public class MdbSpringBootApplication{
 		return BindingBuilder.bind(queue).to(exchange).with(routingKey);
 	}
 
-	/*
-
-	@Bean
-	SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
-											 MessageListenerAdapter listenerAdapter) {
-		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-		container.setConnectionFactory(connectionFactory);
-		container.setQueueNames(queueName);
-		container.setMessageListener(listenerAdapter);
-		return container;
-	}
-
-	@Bean
-	MessageListenerAdapter listenerAdapter(Receiver receiver) {
-		return new MessageListenerAdapter(receiver, "receiveMessage");
-	}
-
-	 */
 
 	public static void main(String[] args) {
 		SpringApplication.run(MdbSpringBootApplication.class, args);
