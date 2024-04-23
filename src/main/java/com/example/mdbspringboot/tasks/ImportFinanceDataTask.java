@@ -152,24 +152,34 @@ public class ImportFinanceDataTask {
             // Fetch all stock symbols from the API
             ResponseEntity<String> response = restTemplate.getForEntity(MDB_API_URL + "/api/stocks", String.class);
             JsonParser springParser = JsonParserFactory.getJsonParser();
-            Map<String, Object> map = springParser.parseMap(response.getBody());
-            List<Map<String, Object>> stocks = (List<Map<String, Object>>) map.get("stocks");
+            List<Object> stocks = springParser.parseList(response.getBody());
 
             if (stocks != null && !stocks.isEmpty()) {
                 // Pick a random stock
                 Random random = new Random();
-                Map<String, Object> randomStock = stocks.get(random.nextInt(stocks.size()));
+                Map<String, Object> randomStock = (Map<String, Object>) stocks.get(random.nextInt(stocks.size()));
 
+                String id = (String) randomStock.get("id");
                 String symbol = (String) randomStock.get("symbol");
-                float lastSale = Float.parseFloat((String) randomStock.get("lastSale"));
-                boolean increase = random.nextBoolean(); // Randomly decide to increase or decrease
+                String name = (String) randomStock.get("name");
+                float lastSale = ((Number) randomStock.get("lastSale")).floatValue();
+                float highSale = ((Number) randomStock.get("highSale")).floatValue();
+                float lowSale = ((Number) randomStock.get("lowSale")).floatValue();
+                float volatilityIndex = ((Number) randomStock.get("volatilityIndex")).floatValue();
+                String lastModifiedDate = (String) randomStock.get("lastModifiedDate");
 
+                boolean increase = random.nextBoolean(); // Randomly decide to increase or decrease
                 // Calculate the new price with a ±0.5% variation
                 float changeFactor = 1 + (increase ? 0.005f : -0.005f);
                 lastSale *= changeFactor;
 
-                // Update the stock object
-                StockSymbol stock = new StockSymbol(symbol, symbol, (String) randomStock.get("name"), lastSale);
+                // Create a fully populated StockSymbol object
+                StockSymbol stock = new StockSymbol(id, symbol, name, lastSale);
+                stock.setHighSale(highSale);
+                stock.setLowSale(lowSale);
+                stock.setVolatilityIndex(volatilityIndex);
+                stock.setLastModifiedDate(lastModifiedDate);
+
                 restTemplate.put(MDB_API_URL + "/api/stock/" + symbol, stock);
                 System.out.println("Adjusted stock " + symbol + " to new last sale price: " + lastSale);
 
@@ -180,4 +190,6 @@ public class ImportFinanceDataTask {
             log.error("Error adjusting stock price: {}", e.getMessage());
         }
     }
+
+
 }
