@@ -55,12 +55,12 @@ public class ImportFinanceDataTask {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 10000)
     public void reportCurrentTime() {
         log.info("The time is now {}", dateFormat.format(new Date()));
     }
 
-    @Scheduled(fixedRate = 3000)
+    @Scheduled(fixedRate = 3600000)
     public void fetchDataFromApi() {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
